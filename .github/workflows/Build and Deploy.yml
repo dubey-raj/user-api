@@ -11,16 +11,16 @@ permissions:
       contents: read
 env:
    TF_LOG: INFO
-   AWS_REGION: us-east-1
+   AWS_REGION: eu-north-1
    AWS_BUCKET_NAME: ${{ secrets.TF_STATE_BUCKET_NAME }}
    AWS_BUCKET_KEY_NAME: ${{ secrets.TF_STATE_BUCKET_KEY }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./UserService
+    # defaults:
+    #   run:
+    #     working-directory: ./UserService
 
     steps:
     - uses: actions/checkout@v4
@@ -48,10 +48,10 @@ jobs:
     - name: Build and push docker Image
       uses: docker/build-push-action@v2
       with:
-          context: UserService
+          #context: UserService
           push: true
           tags: dubeyraj/user-api:${{github.run_id}}
-          file: ./user-api/Dockerfile
+          file: ./Dockerfile
   
   deploy:
     needs: [build]
@@ -71,7 +71,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: us-east-1
+          aws-region: eu-north-1
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: GitHub-Actions-OIDC-TERRAFORM
       
@@ -82,7 +82,7 @@ jobs:
       
       - name: Terraform Init
         id: init
-        run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET_NAME }}" -backend-config="key=user-api/dev/terraform.tfstate" -backend-config="region=us-east-1" -backend-config="encrypt=true" -backend-config="dynamodb_table=${{ secrets.TF_STATE_DYNAMODB_TABLE }}" -input=false
+        run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET_NAME }}" -backend-config="key=user-api/dev/terraform.tfstate" -backend-config="region=eu-north-1" -backend-config="encrypt=true" -backend-config="dynamodb_table=${{ secrets.TF_STATE_DYNAMODB_TABLE }}" -input=false
 
       - name: Terraform Plan
         id: plan
