@@ -3,12 +3,12 @@
 namespace UserService.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Route("user-api")]
     [ApiController]
+    [Route("")]
     public class RootController : ControllerBase
     {
-        //[HttpGet("swagger")]
-        //public RedirectResult Get() => Redirect("/swagger");
+        [HttpGet]
+        public RedirectResult Get() => Redirect("/swagger");
 
         /// <summary>
         /// Returns response for healthz query

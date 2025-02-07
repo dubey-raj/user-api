@@ -21,16 +21,16 @@ app.UseCors(policy => policy
 .AllowAnyHeader()
 .AllowAnyOrigin()
 );
-app.UseSwagger();
-var basePath = string.IsNullOrEmpty(app.Configuration["BasePath"]) ? "": "/"+app.Configuration["BasePath"];
-var routePrefix = string.IsNullOrEmpty(app.Configuration["BasePath"]) ? "swagger" : app.Configuration["BasePath"]+"/"+"swagger";
+var basePath = builder.Environment.EnvironmentName?.ToLower() == "local" ? "":  "/user-api";
 // Ensure correct path handling in ALB
 app.UsePathBase(new PathString(basePath));
+app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.RoutePrefix = routePrefix;
+    c.RoutePrefix = "swagger";
     c.SwaggerEndpoint($"{basePath}/swagger/v1/swagger.json", "UserService V1");
 });
-app.UseHttpsRedirection();
+app.UseRouting();
 app.MapControllers();
+app.UseHttpsRedirection();
 app.Run();
