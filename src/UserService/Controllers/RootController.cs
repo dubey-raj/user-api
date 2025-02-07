@@ -7,8 +7,8 @@ namespace UserService.Controllers
     [ApiController]
     public class RootController : ControllerBase
     {
-        [HttpGet("swagger")]
-        public RedirectResult Get() => Redirect("/swagger");
+        //[HttpGet("swagger")]
+        //public RedirectResult Get() => Redirect("/swagger");
 
         /// <summary>
         /// Returns response for healthz query

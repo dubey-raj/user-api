@@ -22,7 +22,11 @@ app.UseCors(policy => policy
 .AllowAnyOrigin()
 );
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.RoutePrefix = "user-api/swagger";
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "UserService V1");
+});
 app.UseHttpsRedirection();
 app.MapControllers();
 
