@@ -26,7 +26,7 @@ var basePath = string.IsNullOrEmpty(app.Configuration["BasePath"]) ? "": "/"+app
 var routePrefix = string.IsNullOrEmpty(app.Configuration["BasePath"]) ? "swagger" : app.Configuration["BasePath"]+"/"+"swagger";
 app.UseSwaggerUI(c =>
 {
-    c.RoutePrefix = routePrefix;
+    c.RoutePrefix = "swagger";
     c.SwaggerEndpoint($"{basePath}/swagger/v1/swagger.json", "UserService V1");
 });
 
