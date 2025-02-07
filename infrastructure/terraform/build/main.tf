@@ -30,7 +30,7 @@ data "aws_subnets" "private" {
 variable "security_group_id" {
   type = string
   description = "Id of existing security group to use for container"
-  default = "sg-0df5a1985105e7646"
+  default = "sg-01ad930b2238b6672"
 }
 
 data "aws_security_group" "app01" {
