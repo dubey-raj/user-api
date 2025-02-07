@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace UserService.Controllers
 {
     [ApiController]
-    [Route("user")]
+    [Route("user-api")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
@@ -17,7 +17,7 @@ namespace UserService.Controllers
             _userService = userService;
         }
 
-        [HttpPost("register")]
+        [HttpPost("user/register")]
         public async Task<IActionResult> Register([FromBody] RegisterCustomerRequest request)
         {
             if (!ModelState.IsValid)
@@ -31,7 +31,7 @@ namespace UserService.Controllers
             return Ok(result.IsSuccess);
         }
 
-        [HttpPatch("update")]
+        [HttpPatch("user/update")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateCustomerRequest request)
         {
             if (!ModelState.IsValid)
@@ -46,7 +46,7 @@ namespace UserService.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
+        [Route("user/{id}")]
         public IActionResult GetUserById([FromRoute] int id)
         {
             var user = _userService.GetUserByIdAsync(id);

@@ -9,7 +9,7 @@ resource "aws_lb_target_group" "alb-target-group" {
   load_balancing_algorithm_type = "round_robin"
 
   health_check {
-    path    = "/user/healthz"
+    path    = "/user-api/healthz"
     matcher = "200"
   }
 
@@ -39,7 +39,7 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
   }
   condition {
     path_pattern {
-      values = ["/user/*"]
+      values = ["/user-api/*"]
     }
   }
   tags = {

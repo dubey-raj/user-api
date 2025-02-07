@@ -3,7 +3,7 @@
 namespace UserService.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    [Route("user")]
+    [Route("user-api")]
     [ApiController]
     public class RootController : ControllerBase
     {
