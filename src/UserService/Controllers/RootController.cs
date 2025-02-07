@@ -7,7 +7,7 @@ namespace UserService.Controllers
     [ApiController]
     public class RootController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("swagger")]
         public RedirectResult Get() => Redirect("/swagger");
 
         /// <summary>
