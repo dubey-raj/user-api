@@ -30,7 +30,7 @@ data "aws_subnets" "private" {
 variable "security_group_id" {
   type = string
   description = "Id of existing security group to use for container"
-  default = "sg-0bd4eb96bdeaeea46"
+  default = "sg-0df5a1985105e7646"
 }
 
 data "aws_security_group" "app01" {
@@ -40,7 +40,7 @@ data "aws_security_group" "app01" {
 variable "alb_arn" {
   type = string
   description = "arn of shared load balancer"
-  default = "arn:aws:elasticloadbalancing:eu-north-1:977099024175:loadbalancer/app/app-alb-eu-north-1/56186c3dda3107f0"
+  default = "arn:aws:elasticloadbalancing:eu-north-1:934076056444:loadbalancer/app/app-alb-eu-north-1/efb682542b6315fc"
 }
 
 data "aws_lb" "alb"{
