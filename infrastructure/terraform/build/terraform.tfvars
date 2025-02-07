@@ -1,0 +1,7 @@
+Region = "eu-north-1"
+vpc_id = "vpc-0ed3411bc6ebf5c00"
+Application = "user-api"
+ArtifactoryRepo = "dubeyraj/user-api"
+EnvCode = "dev"
+EnvTag = "Development"
+SolTag = "user-api"
