@@ -22,11 +22,16 @@ app.UseCors(policy => policy
 .AllowAnyOrigin()
 );
 app.UseSwagger();
+var basePath = string.IsNullOrEmpty(app.Configuration["BasePath"]) ? "": "/"+app.Configuration["BasePath"];
+var routePrefix = string.IsNullOrEmpty(app.Configuration["BasePath"]) ? "swagger" : app.Configuration["BasePath"]+"/"+"swagger";
 app.UseSwaggerUI(c =>
 {
-    c.RoutePrefix = "user-api/swagger";
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "UserService V1");
+    c.RoutePrefix = routePrefix;
+    c.SwaggerEndpoint($"{basePath}/swagger/v1/swagger.json", "UserService V1");
 });
+
+// Ensure correct path handling in ALB
+app.UsePathBase(new PathString($"{basePath}"));
 app.UseHttpsRedirection();
 app.MapControllers();
 
