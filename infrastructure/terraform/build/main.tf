@@ -40,7 +40,7 @@ data "aws_security_group" "app01" {
 variable "alb_arn" {
   type = string
   description = "arn of shared load balancer"
-  default = "arn:aws:elasticloadbalancing:eu-north-1:934076056444:listener/app/app-alb-eu-north-1/efb682542b6315fc/ca5c2dfa54673e85"
+  default = "arn:aws:elasticloadbalancing:eu-north-1:934076056444:loadbalancer/app/app-alb-eu-north-1/efb682542b6315fc"
 }
 
 data "aws_lb" "alb"{
