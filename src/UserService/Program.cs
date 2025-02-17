@@ -1,3 +1,4 @@
+using Amazon.SQS;
 using Microsoft.AspNetCore.Identity;
 using UserService.Configurations;
 using UserService.DataStorage.DAL;
@@ -12,6 +13,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddUsersDBContext(builder.Configuration);
 builder.Services.AddScoped<IUserService, GlamUserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddAWSService<IAmazonSQS>();
+builder.Services.AddScoped<IEventPublisher, EventPublisher>();
 
 var app = builder.Build();
 
@@ -21,7 +24,7 @@ app.UseCors(policy => policy
 .AllowAnyHeader()
 .AllowAnyOrigin()
 );
-var basePath = builder.Environment.EnvironmentName?.ToLower() == "local" ? "":  "/user-api";
+var basePath = "/user-api";
 // Ensure correct path handling in ALB
 app.UsePathBase(new PathString(basePath));
 app.UseSwagger();

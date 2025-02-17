@@ -11,13 +11,15 @@ namespace UserService.Services
     {
         private readonly UsersContext _dbContext;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IEventPublisher _eventPublisher;
 
         ///<inheritdoc/>
         public GlamUserService(IConfiguration configuration, UsersContext usersContext
-            , IPasswordHasher<User> passwordHasher)
+            , IPasswordHasher<User> passwordHasher, IEventPublisher eventPublisher)
         {
             _passwordHasher = passwordHasher;
             _dbContext = usersContext;
+            _eventPublisher = eventPublisher;
         }
 
         ///<inheritdoc/>
@@ -65,7 +67,7 @@ namespace UserService.Services
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 PhoneNumber = request.PhoneNumber,
-                IsActive = false,
+                IsActive = true,
                 CreatedAt = DateTime.Now,
                 UserRoles = [new UserRole {
                 RoleId = 1,
@@ -89,6 +91,23 @@ namespace UserService.Services
             // Add user to the database
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();
+
+            //Publish the message to send the notification to user
+            NotificationEvent<NewUser> notificationEvent = new()
+            {
+                EventType = "User.Registered",
+                TimeStamp = DateTime.UtcNow,
+                Payload = new NewUser
+                {
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Phone = user.PhoneNumber,
+                }
+            };
+
+            //Fire and forgot notification message push
+            _ = _eventPublisher.PublishEventAsync(notificationEvent);
 
             return (true, "Registration successful.");
         }
