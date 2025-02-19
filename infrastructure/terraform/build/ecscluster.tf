@@ -83,12 +83,12 @@ resource "aws_cloudwatch_log_group" "ecscluster_logs" {
 
 # Create CloudWatch log group for Application logs
 resource "aws_cloudwatch_log_group" "app_logs" {
-  name              = format("%s/%s/%s", "ecs",var.Application, var.EnvCode)
+  name              = format("%s/%s/%s", "ecs", var.Application, var.EnvCode)
   retention_in_days = 1
   kms_key_id        = aws_kms_key.kms_key.arn
 
   tags = {
-    Name         = format("%s/%s/%s", "ecs",var.Application, var.EnvCode)
+    Name         = format("%s/%s/%s", "ecs", var.Application, var.EnvCode)
     resourcetype = "monitor"
     codeblock    = "ecscluster"
   }
@@ -151,7 +151,6 @@ resource "aws_iam_role_policy" "ecstaskexecaccess" {
     Version = "2012-10-17"
     Statement = [
       {
-        # https://docs.aws.amazon.com/AmazonECR/latest/userguide/security_iam_id-based-policy-examples.html
         Action = [
           "ecr:GetAuthorizationToken"
         ]
@@ -159,7 +158,6 @@ resource "aws_iam_role_policy" "ecstaskexecaccess" {
         Resource = ["*"]
       },
       {
-        # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html#cwl_iam_policy
         Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
@@ -168,6 +166,15 @@ resource "aws_iam_role_policy" "ecstaskexecaccess" {
         ]
         Effect   = "Allow"
         Resource = ["arn:aws:logs:*:*:*"]
+      },
+      {
+        "Action" : [
+          "sqs:SendMessage"
+        ],
+        "Effect" : "Allow",
+        "Resource" : [
+          "arn:aws:sqs:eu-north-1:934076056444:NotificationProcessorLambda-dev"
+        ]
       }
     ]
   })
