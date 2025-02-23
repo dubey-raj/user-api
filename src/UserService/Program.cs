@@ -23,6 +23,16 @@ builder.Services.AddScoped<IEventPublisher, EventPublisher>();
 
 var app = builder.Build();
 
+var env = builder.Environment.EnvironmentName?.ToLower();
+builder.Configuration.AddJsonFile("appsettings.json", false, true);
+if (env == "local")
+{
+    builder.Configuration.AddJsonFile($"appsettings.local.json", false, true);
+}
+else
+{
+    builder.Configuration.AddJsonFile($"appsettings.dev.json", false, true);
+}
 // Configure the HTTP request pipeline.
 app.UseCors(policy => policy
 .AllowAnyMethod()
