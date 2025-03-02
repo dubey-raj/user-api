@@ -7,10 +7,21 @@ using UserService.Configurations;
 using UserService.DataStorage.DAL;
 using UserService.Services;
 using UserService.Middlewares;
+using Serilog.Core;
+using Serilog.Events;
+using Serilog.Exceptions.Core;
+using Serilog.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-ConfigureLogging(builder);
+builder.Services.AddLogging(logConfig =>
+{
+    logConfig.ClearProviders();
+    logConfig.AddDebug();
+    logConfig.AddEventSourceLogger();
+    ConfigureLogging(builder);
+    logConfig.AddSerilog();
+});
 builder.Services.AddControllers();
 builder.Services.AddCors();
 builder.Services.AddEndpointsApiExplorer();
@@ -59,9 +70,11 @@ static void ConfigureLogging(WebApplicationBuilder builder)
 {
     //Configure serilog as logger
     Log.Logger = new LoggerConfiguration()
-        .WriteTo.Console(new JsonFormatter(renderMessage: true))
-        .Enrich.FromLogContext()
+        .WriteTo.Console(new JsonFormatter(renderMessage: false))
         .ReadFrom.Configuration(builder.Configuration)
+        .Enrich.FromLogContext()
+        .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder().WithDefaultDestructurers())
+        .Enrich.With(new ExceptionEnricher())
         .CreateLogger();
     builder.Host.UseSerilog();
 }
@@ -97,4 +110,16 @@ static void AddSwaggerGen(WebApplicationBuilder builder)
             }
         });
     });
+}
+
+class ExceptionEnricher : ILogEventEnricher
+{
+    public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
+    {
+        if (logEvent.Exception == null)
+            return;
+
+        var logEventProperty = propertyFactory.CreateProperty("EscapedException", logEvent.Exception.ToString().Replace("\r\n", "\\r\\n"));
+        logEvent.AddPropertyIfAbsent(logEventProperty);
+    }
 }
