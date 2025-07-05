@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UserService.DataStorage.DAL;
+namespace UserService.DataStorage.DAO;
 
 public partial class UserAddress
 {

@@ -1,24 +1,24 @@
-﻿using UserService.DataStorage.DAL;
+﻿using UserService.DataStorage.DAO;
 using UserService.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using User = UserService.DataStorage.DAL.User;
+using User = UserService.DataStorage.DAO.User;
 using Microsoft.AspNetCore.Identity;
 
 namespace UserService.Services
 {
-    public class GlamUserService : IUserService
+    public class UsersService : IUserService
     {
-        private readonly UsersContext _dbContext;
+        private readonly YcUsersDbContext _dbContext;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IEventPublisher _eventPublisher;
 
         ///<inheritdoc/>
-        public GlamUserService(IConfiguration configuration, UsersContext usersContext
+        public UsersService(IConfiguration configuration, YcUsersDbContext YcUsersDbContext
             , IPasswordHasher<User> passwordHasher, IEventPublisher eventPublisher)
         {
             _passwordHasher = passwordHasher;
-            _dbContext = usersContext;
+            _dbContext = YcUsersDbContext;
             _eventPublisher = eventPublisher;
         }
 
@@ -138,6 +138,64 @@ namespace UserService.Services
             await _dbContext.SaveChangesAsync();
 
             return (true, "User update successfully.");
+        }
+
+        ///<inheritdoc/>
+        public async Task<(bool IsSuccess, string Message)> UpdateUserAssignmentAsync(UpdateAssignedCaseCountRequest request)
+        {
+            var user = await _dbContext.Users
+                .Include("UserAddresses")
+                .FirstOrDefaultAsync(user => user.Id == request.UserId);
+            if (user == null)
+            {
+                return (false, "User not found");
+            }
+            if (!user.AssignedCaseCount.HasValue)
+            {
+                user.AssignedCaseCount = 0;
+            }
+            user.AssignedCaseCount += request.DeltaCount;
+            await _dbContext.SaveChangesAsync();
+
+            return (true, "Assigned case count updated succesfully");
+        }
+
+        ///<inheritdoc/>
+        public async Task<List<AvailableUserResponse>> GetAvailableUserAsync(string role, string region, int limit = 1)
+        {
+            var roleId = Enum.TryParse<Model.UserType>(role, out var roleType);
+            var inspectors = await _dbContext.Users
+                .Include(u => u.UserRoles)
+                .Where(u => u.UserRoles.Any(ur => ur.RoleId == (int) roleType))
+                .OrderBy(u => u.AssignedCaseCount)
+                .Take(limit)
+                .Select(ins => new AvailableUserResponse { 
+                    Id = ins.Id,
+                    Email = ins.Email,
+                    Name = $"{ins.FirstName} {ins.LastName}",
+                    CurrentAssignments = ins.AssignedCaseCount ?? 0
+                }).ToListAsync();
+            
+            return inspectors;
+        }
+
+        ///<inheritdoc/>
+        public async Task<List<AvailableUserResponse>> GetAvailableManager(string region, int limit = 1)
+        {
+            var managers = await _dbContext.Users
+                .Include(u => u.UserRoles)
+                .Where(u => u.UserRoles.Any(ur => ur.RoleId == 3))
+                .OrderBy(u => u.AssignedCaseCount)
+                .Take(limit)
+                .Select(ins => new AvailableUserResponse
+                {
+                    Id = ins.Id,
+                    Email = ins.Email,
+                    Name = $"{ins.FirstName} {ins.LastName}",
+                    CurrentAssignments = ins.AssignedCaseCount ?? 0
+                }).ToListAsync();
+
+            return managers;
         }
     }
 }

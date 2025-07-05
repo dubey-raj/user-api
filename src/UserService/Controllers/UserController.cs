@@ -55,5 +55,20 @@ namespace UserService.Controllers
             }
             return Ok(user);
         }
+
+        [HttpGet]
+        [Route("{role}/availability")]
+        public async Task<IActionResult> GetInspectorAvailability(string role, string region, int limit)
+        {
+            var inspectors = await _userService.GetAvailableUserAsync(role, region, limit);
+            return Ok(inspectors);
+        }
+
+        [HttpPatch("update-assigned-count")]
+        public async Task<IActionResult> UpdateAssignedClaimCount([FromBody] UpdateAssignedCaseCountRequest request)
+        {
+            var res = await _userService.UpdateUserAssignmentAsync(request);
+            return Ok(res.IsSuccess);
+        }
     }
 }

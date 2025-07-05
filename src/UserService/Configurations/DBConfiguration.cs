@@ -1,4 +1,4 @@
-﻿using UserService.DataStorage.DAL;
+﻿using UserService.DataStorage.DAO;
 using Microsoft.EntityFrameworkCore;
 
 namespace UserService.Configurations
@@ -6,8 +6,8 @@ namespace UserService.Configurations
     public static class DBConfiguration
     {
         public static IServiceCollection AddUsersDBContext(this IServiceCollection services, IConfiguration configuration) {
-            services.AddTransient<UsersContext>();
-            services.AddDbContext<UsersContext>(opt => {
+            services.AddTransient<YcUsersDbContext>();
+            services.AddDbContext<YcUsersDbContext>(opt => {
                 var dbConnectionSetting = configuration.GetSection("DBConnectionInfo");
                 if (dbConnectionSetting == null)
                 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UserService.DataStorage.DAL;
+namespace UserService.DataStorage.DAO;
 
 public partial class User
 {
@@ -17,11 +17,13 @@ public partial class User
 
     public string? PhoneNumber { get; set; }
 
+    public bool? IsActive { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
-    public bool? IsActive { get; set; }
+    public int? AssignedCaseCount { get; set; }
 
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
